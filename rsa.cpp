@@ -41,8 +41,9 @@ void RSA::EncryptionFile(const char * filename, const char * fileout)//¶ÔÎÄ¼þ½øÐ
 		}
 		fout.write((char*)bufferout, curNum * sizeof(DataType));
 	}
-	delete[] buffer;
 	delete[] bufferout;
+	delete[] buffer;
+	
 	fin.close();
 	fout.close();
 }
@@ -69,15 +70,16 @@ void RSA::DecryptFile(const char * filename, const char * fileout)//¶ÔÎÄ¼þ½øÐÐ·Ö
 		}
 		fout.write(bufferout, num);
 	}
-	delete[] buffer;
 	delete[] bufferout;
+	delete[] buffer;
+	
 	fin.close();
 	fout.close();
 }
 DataType RSA::Prime()//µÃµ½ËØÊý ¡ù
 {
 	bordm::mt19937 Gen(time(nullptr));//Ëæ»úÊý·¢ÉúÆ÷
-	bordm::uniform_int_distribution<DataType> Breadth(0, DataType(1) << 256);//Ëæ»úÊýµÄ·¶Î§
+	bordm::uniform_int_distribution<DataType> Breadth(0, DataType(1) << 128);//Ëæ»úÊýµÄ·¶Î§
 	DataType prime;
 	while (true)
 	{
@@ -151,16 +153,16 @@ DataType RSA::exGcd(DataType a, DataType b, DataType& x, DataType& y)//À©Õ¹µÄÅ·¼
 }
 DataType RSA::ecrept(DataType data, DataType ekey, DataType pkey)//¼ÓÃÜ¹ý³ÌµÄÄ£ÃÝÔËËã:ÃÉ¸çÂíÀûËã·¨¡ù
 {
-	DataType Ai = data;
-	DataType msg = 1;
+	DataType a = data;
+	DataType tmp = 1;
 	while (ekey)
 	{
 		if (ekey & 1)
-			msg = (msg * Ai);
+			tmp = (tmp * a) % pkey;
 		ekey >>= 1;
-		Ai = (Ai * Ai) % pkey;
+		a = (a * a) % pkey;
 	}
-	return msg % pkey;
+	return tmp;
 }
 DataType RSA::decrept(DataType data, DataType dkey, DataType pkey)
 {
